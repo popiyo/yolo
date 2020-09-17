@@ -1,0 +1,33 @@
+version: "3.1"
+services:
+  backend:
+    build: backend
+    command: npm start
+    depends_on:
+    - mongodb_container
+    ports:
+    - 5000:5000
+    environment:
+      MONGODB_URI: mongodb://mongodb_container:27017/yolomy?retryWrites=true&w=majority
+
+  mongodb_container:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - 27020:27017
+    volumes:
+      - mongodb_data_container:/data/db
+
+  client:
+    build: client
+    command: npm start
+    depends_on:
+    - backend
+    ports:
+    - 80:80
+
+volumes:
+    mongodb_data_container:
+

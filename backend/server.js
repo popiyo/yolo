@@ -31,10 +31,10 @@ const app = express()
 // Body parser middleware
 app.use(express.json())
 
-// 
-app.use(upload.array()); 
+//
+app.use(upload.array());
 
-// Cors 
+// Cors
 app.use(cors());
 
 // Use Route
