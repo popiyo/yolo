@@ -1,27 +1,3 @@
-# Requirements
-Make sure that you have the following installed:
-- [node](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-18-04)
-- npm
-- [MongoDB](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/) and start the mongodb service with `sudo service mongod start`
-
-## Navigate to the Client Folder
- `cd client`
-
-## Run the folllowing command to install the dependencies
- `npm install`
-
-## Run the folllowing to start the app
- `npm start`
-
-## Open a new terminal and run the same commands in the backend folder
- `cd ../backend`
-
- `npm install`
-
- `npm start`
-
- ### Go ahead a nd add a product (note that the price field only takes a numeric input)
-
 #Choice of the base image on which to build each container.
 
 I have a total of 4 containers that successed the project
@@ -42,7 +18,7 @@ RUN npm install
 COPY . .
 
 2. client:
-# build environment
+build environment
 FROM node:13.12.0-alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
@@ -53,7 +29,7 @@ RUN npm install react-scripts@3.4.1 -g --silent
 COPY . ./
 RUN npm run build
 
-## production environment
+##production environment
 FROM nginx:stable-alpine
 COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80
