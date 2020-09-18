@@ -4,22 +4,33 @@ services:
     build: backend
     command: npm start
     depends_on:
-    - mongodb_container
+    - mongodbc
     ports:
     - 5000:5000
     environment:
-      MONGODB_URI: mongodb://mongodb_container:27017/yolomy?retryWrites=true&w=majority
+            MONGODB_URI: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodbc:27017?retryWrites=true&w=majority
+  
+    
 
-  mongodb_container:
+  mongodbc:
     image: mongo:latest
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: rootpassword
-    ports:
-      - 27020:27017
+    container_name: mongodb
+    hostname: mongodb
     volumes:
-      - mongodb_data_container:/data/db
-
+            - ./.docker/mongodb/mongod.conf:/etc/mongod.conf
+            - ./.docker/mongodb/initdb.d/:/docker-entrypoint-initdb.d/
+            - ./.docker/mongodb/data/db/:/data/db/
+            - ./.docker/mongodb/data/log/:/var/log/mongodb/
+    env_file:
+            - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    ports:
+            - "27017:27017"    
+    command: ["-f", "/etc/mongod.conf"]
+    
   client:
     container_name: ecommerceportal
     build:
@@ -31,7 +42,24 @@ services:
 
     depends_on:
     - backend
-   
+
+  mongoxpress:
+    image: mongo-express:latest
+    container_name: mongox
+    hostname: mongox
+
+    ports:
+            - "8081:8081"
+    links:
+            - "mongodbc:mongo"
+
+    volumes:
+            - ./.docker/mongodb/mongod.conf:/etc/mongod.conf
+            
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+
 volumes:
     mongodb_data_container:
 
