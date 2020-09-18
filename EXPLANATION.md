@@ -8,6 +8,8 @@ This solution is self sustaining.
 3. mongodbc mongo:latest - to have an independed db container
 4. mongoxpress mongo-express:latest - for database administration
 
+
+_____________________________________
 # Dockerfile directives used in the creation and running of each container.
 
 1. backend:
@@ -16,6 +18,7 @@ WORKDIR /usr/backend
 COPY package.json ./
 RUN npm install
 COPY . .
+
 
 2. client:
 build environment
@@ -35,28 +38,38 @@ COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 
+
+_____________________________________
 # Docker-compose Networking (Application port allocation and a bridge network implementation) where necessary.
 - Network selection was the default : yolo_default
 - running on local and exposed to the host
+
+
 ## backend
 ports:
 - 5000:5000
+
 
 ## mongodb
 ports:
 - "27017:27017"
 
+
 ## Client
 ports:
 - 3333:80
+
 
 ## mongoxpress
 ports:
 - "8081:8081"
 
+
+_____________________________________
 # Docker-compose volume definition and usage (where necessary).
 volumes:
     mongodb_data_container:
+
 
 ## mongodbc - for persistence
 volumes:
@@ -65,13 +78,18 @@ volumes:
         - ./.docker/mongodb/data/db/:/data/db/
         - ./.docker/mongodb/data/log/:/var/log/mongodb/
 
+
 ## mongoxpress - for file sharing with mongodbc and configs
 volumes:
         - ./.docker/mongodb/mongod.conf:/etc/mongod.conf
 
+
+_____________________________________
 # Git workflow used to achieve the task.
 - this was not achieved since the deployment approach i used is experimental
 
+
+_____________________________________
 # Successful running of the applications and if not, debugging measures applied.
 Debugging was mandated to enable the mongodb to run that included
  - creation of mongo.config
@@ -88,5 +106,8 @@ mongodbc service environment:
            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
            MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
 
+
+
+_____________________________________
 # Good practices such as Docker image tag naming standards for ease of identification of images and containers.
 - the model used for this deployment is not for availing a container to be pulled but rather scripts that successfully create a fully working and independed environment on a VM.
